@@ -1,1 +1,9 @@
 E:\Info\C# things\Snake\Snake\Snake\bin\Debug\Snake.exe.config
+E:\Info\C# things\Snake\Snake\Snake\bin\Debug\Snake.exe
+E:\Info\C# things\Snake\Snake\Snake\bin\Debug\Snake.pdb
+E:\Info\C# things\Snake\Snake\Snake\obj\Debug\Snake.csprojResolveAssemblyReference.cache
+E:\Info\C# things\Snake\Snake\Snake\obj\Debug\Snake.Properties.Resources.resources
+E:\Info\C# things\Snake\Snake\Snake\obj\Debug\Snake.csproj.GenerateResource.Cache
+E:\Info\C# things\Snake\Snake\Snake\obj\Debug\Snake.exe
+E:\Info\C# things\Snake\Snake\Snake\obj\Debug\Snake.pdb
+E:\Info\C# things\Snake\Snake\Snake\obj\Debug\Snake.Snake.resources
