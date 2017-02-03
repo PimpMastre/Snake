@@ -35,7 +35,6 @@
             this.buttonExit = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.timerGameSpeed = new System.Windows.Forms.Timer(this.components);
-            this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -79,7 +78,6 @@
             // 
             // panel1
             // 
-            this.panel1.Controls.Add(this.textBox1);
             this.panel1.Controls.Add(this.buttonExit);
             this.panel1.Controls.Add(this.labelTitle);
             this.panel1.Controls.Add(this.buttonHighScores);
@@ -95,13 +93,6 @@
             // 
             this.timerGameSpeed.Interval = 250;
             this.timerGameSpeed.Tick += new System.EventHandler(this.timerGameSpeed_Tick);
-            // 
-            // textBox1
-            // 
-            this.textBox1.Location = new System.Drawing.Point(253, 31);
-            this.textBox1.Name = "textBox1";
-            this.textBox1.Size = new System.Drawing.Size(100, 20);
-            this.textBox1.TabIndex = 5;
             // 
             // Snake
             // 
@@ -130,7 +121,6 @@
         private System.Windows.Forms.Button buttonExit;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Timer timerGameSpeed;
-        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
