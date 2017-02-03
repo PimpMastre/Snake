@@ -35,6 +35,7 @@
             this.buttonExit = new System.Windows.Forms.Button();
             this.panel1 = new System.Windows.Forms.Panel();
             this.timerGameSpeed = new System.Windows.Forms.Timer(this.components);
+            this.textBox1 = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -78,6 +79,7 @@
             // 
             // panel1
             // 
+            this.panel1.Controls.Add(this.textBox1);
             this.panel1.Controls.Add(this.buttonExit);
             this.panel1.Controls.Add(this.labelTitle);
             this.panel1.Controls.Add(this.buttonHighScores);
@@ -94,17 +96,26 @@
             this.timerGameSpeed.Interval = 250;
             this.timerGameSpeed.Tick += new System.EventHandler(this.timerGameSpeed_Tick);
             // 
+            // textBox1
+            // 
+            this.textBox1.Location = new System.Drawing.Point(253, 31);
+            this.textBox1.Name = "textBox1";
+            this.textBox1.Size = new System.Drawing.Size(100, 20);
+            this.textBox1.TabIndex = 5;
+            // 
             // Snake
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(639, 638);
             this.Controls.Add(this.panel1);
+            this.KeyPreview = true;
             this.MaximumSize = new System.Drawing.Size(655, 677);
             this.MinimumSize = new System.Drawing.Size(655, 677);
             this.Name = "Snake";
             this.Text = "Snake";
             this.Load += new System.EventHandler(this.Snake_Load);
+            this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.Snake_KeyDown);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -119,6 +130,7 @@
         private System.Windows.Forms.Button buttonExit;
         private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.Timer timerGameSpeed;
+        private System.Windows.Forms.TextBox textBox1;
     }
 }
 
