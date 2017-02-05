@@ -12,6 +12,8 @@ namespace Snake
 {
     public partial class Snake : Form
     {
+        //CULOAREA TEXTULUI = FORM BACKGROUND COLOR
+        //CULOAREA FUNDALULUI = PICTUREBOX COLORS
         struct Tail
         {
             public int xPos, yPos; // pozitia pe coloana = x, pozitia pe linie = y
@@ -20,9 +22,13 @@ namespace Snake
         Random r = new Random();
         int randomX, randomY;
 
+        bool PBLoaded = false;
+        int tick = 0;
+        int GOTick;
+        int gameScore = 0;
         int direction = 0; // 0 inseamna nimic, 1- sus, 2- dreapta, 3- jos, 4- stanga
         int newDirection = 0; // pentru a nu da update la directie instantaneu
-        int gameSpeed = 50; // default 250
+        int gameSpeed = 250; // default 250
         int pixelDivider = 32; // default 32
         int pictureBoxSize;
         public static PictureBox[,] PB;
@@ -30,8 +36,9 @@ namespace Snake
         Tail pickupLocation;
         int snakeLength = 1;
         int queueLength = 0;
-        Writing writing = new Writing(); //AESTHETIC, ONLY IMPLEMENT AT THE END
-
+        Writing writing = new Writing();
+        
+        
         public Snake()
         {
             InitializeComponent();
@@ -39,28 +46,66 @@ namespace Snake
 
         private void Snake_Load(object sender, EventArgs e)
         {
-            PB = new PictureBox[pixelDivider + 1, pixelDivider + 1];
-            tail = new Tail[201];
-            pictureBoxSize = 640 / pixelDivider;  // 640x640 e marimea formului, se imparte la pixelDivider
-            for (int i = 1; i <= pixelDivider; ++i)
-                for (int j = 1; j <= pixelDivider; ++j)
-                {
-                    PB[i, j] = new PictureBox();
-                    PB[i, j].Height = pictureBoxSize;
-                    PB[i, j].Width = pictureBoxSize;
-                    PB[i, j].Top = (pictureBoxSize) * (i - 1);
-                    PB[i, j].Left = (pictureBoxSize) * (j - 1);
-                    PB[i, j].BackColor = Color.Black;
-                    PB[i, j].Parent = panel1;
-                }
+            //Game over parts + "tutorial"
+            labelArrowTutorial.Visible = false;
+            labelGameOver.Visible = false;
+            labelGOScore.Visible = false;
+            labelGOScoreNumber.Visible = false;
+            labelGOReplay.Visible = false;
+            labelGOMainMenu.Visible = false;
+            labelPlay.Visible = true;
+            labelHighScores.Visible = true;
+            labelExit.Visible = true;
+
+            //picture box-uri
+            if (PBLoaded == false)
+            {
+                PB = new PictureBox[pixelDivider + 1, pixelDivider + 1];
+                tail = new Tail[201];
+                pictureBoxSize = 640 / pixelDivider;  // 640x640 e marimea formului, se imparte la pixelDivider
+                for (int i = 1; i <= pixelDivider; ++i)
+                    for (int j = 1; j <= pixelDivider; ++j)
+                    {
+                        PB[i, j] = new PictureBox();
+                        PB[i, j].Height = pictureBoxSize;
+                        PB[i, j].Width = pictureBoxSize;
+                        PB[i, j].Top = (pictureBoxSize) * (i - 1);
+                        PB[i, j].Left = (pictureBoxSize) * (j - 1);
+                        PB[i, j].BackColor = Color.Black;
+                        PB[i, j].Parent = panel1;
+                    }
+                PBLoaded = true;
+            }
+            timerWriting.Start();
         }
 
         private void buttonPlay_Click(object sender, EventArgs e)
         {
-            labelTitle.Visible = false; // ascundem butoanele/labelurile
-            buttonPlay.Visible = false;
-            buttonHighScores.Visible = false;
-            buttonExit.Visible = false;
+            labelPlay.Visible = false;
+            labelHighScores.Visible = false;
+            labelExit.Visible = false;
+            labelGameOver.Visible = false;
+            labelGOScore.Visible = false;
+            labelGOScoreNumber.Visible = false;
+            labelGOReplay.Visible = false;
+            labelGOMainMenu.Visible = false;
+
+            labelArrowTutorial.Visible = true;
+            timerBlinkRate.Start();
+            timerWriting.Stop();
+
+            //"stergem" titlul
+            for (int i = 1; i <= 10; ++i)
+                for (int j = 1; j <= pixelDivider; ++j)
+                    PB[i, j].BackColor = Color.Black;
+
+            //resetam totul la default
+            direction = 0;
+            newDirection = 0;
+            gameScore = 0;
+            tick = 0;
+            snakeLength = 1;
+            queueLength = 0;
 
             //sarpele initial, lungime 3
             PB[pixelDivider / 2, pixelDivider / 2 - 1].BackColor = Color.White;
@@ -87,8 +132,8 @@ namespace Snake
             while (placed == false)
             {
                 ok = true;
-                randomX = r.Next(1, 32);
-                randomY = r.Next(1, 32);
+                randomX = r.Next(1, pixelDivider);
+                randomY = r.Next(1, pixelDivider);
 
                 for (int i = 1; i <= snakeLength; ++i)
                     if (randomX == tail[i].xPos && randomY == tail[i].yPos)
@@ -102,6 +147,19 @@ namespace Snake
                     placed = true;
                 }
             }
+        }
+
+        private void gameOver()
+        {
+            //facem sarpele si pickup-ul negru
+            for (int i = 1; i <= snakeLength; ++i)
+                PB[tail[i].xPos, tail[i].yPos].BackColor = Color.Black;
+
+            PB[pickupLocation.xPos, pickupLocation.yPos].BackColor = Color.Black;
+
+            //pornim timerul
+            timerGameOver.Start();
+            GOTick = 0;
         }
 
         private void updateTail() // MAYBE ADD EDGE SCROLLING
@@ -142,29 +200,23 @@ namespace Snake
             else
                 if(tail[1].xPos < 1)
                 {
-                    tail[1].xPos = 32;
+                    tail[1].xPos = pixelDivider;
                 }
                 else
-                    if(tail[1].xPos > 32)
+                    if(tail[1].xPos > pixelDivider)
                     {
                         tail[1].xPos = 1;
                     }
                     else
                         if(tail[1].yPos < 1)
                         {
-                            tail[1].yPos = 32;
+                            tail[1].yPos = pixelDivider;
                         }
                         else
-                            if(tail[1].yPos > 32)
+                            if(tail[1].yPos > pixelDivider)
                             {
                                 tail[1].yPos = 1;
                             }
-            for (int i = 2; i <= snakeLength; ++i)
-                if (tail[1].xPos == tail[i].xPos && tail[1].yPos == tail[i].yPos)
-                {
-                    timerGameSpeed.Stop();
-                    MessageBox.Show("Game over, man!");
-                }
 
             // mutam toata coada catre cap
             for (int i = 2; i <= snakeLength; ++i)
@@ -178,6 +230,13 @@ namespace Snake
             // recoloram sarpele
             for (int i = 1; i <= snakeLength; ++i)
                 PB[tail[i].xPos, tail[i].yPos].BackColor = Color.White;
+
+            for (int i = 2; i <= snakeLength; ++i)
+                if (tail[1].xPos == tail[i].xPos && tail[1].yPos == tail[i].yPos)
+                {
+                    timerGameSpeed.Stop();
+                    gameOver();
+                }
         }
 
         private void timerGameSpeed_Tick(object sender, EventArgs e)
@@ -192,11 +251,17 @@ namespace Snake
             else if (direction == 4 && newDirection != 2)
                 direction = newDirection;
             else
+            {
                 direction = newDirection;
+            }
 
             // la inceputul jocului directia va fi 0, sarpele nu se misca
             if (direction != 0)
+            {
+                labelArrowTutorial.Visible = false;
+                timerBlinkRate.Stop();
                 updateTail();
+            }
 
             //daca avem de adaugat din lista de asteptare, incercam
             if(queueLength > 0)
@@ -355,6 +420,65 @@ namespace Snake
             }
         }
 
+        private void buttonExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
+        }
+
+        private void timerWriting_Tick(object sender, EventArgs e)
+        {
+            tick++;
+            //SNAKE
+            writing.drawSLetter(3, 5, tick);
+            writing.drawNLetter(3, 10, tick);
+            writing.drawALetter(3, 15, tick);
+            writing.drawKLetter(3, 20, tick);
+            writing.drawELetter(3, 25, tick);
+
+            if (tick > 5)
+                timerWriting.Stop();
+        }
+
+        private void buttonHighScores_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void timerBlinkRate_Tick(object sender, EventArgs e)
+        {
+            if (labelArrowTutorial.Visible == true)
+                labelArrowTutorial.Visible = false;
+            else
+                labelArrowTutorial.Visible = true;
+        }
+
+        private void timerGameOver_Tick(object sender, EventArgs e)
+        {
+            GOTick++;
+
+            if(GOTick == 1)
+                labelGameOver.Visible = true;
+
+            if (GOTick == 2)
+                labelGOScore.Visible = true;
+
+            if (GOTick == 3)
+            {
+                labelGOScoreNumber.Text = gameScore.ToString();
+                labelGOScoreNumber.Left = (this.ClientSize.Width - labelGOScoreNumber.Width) / 2;
+                labelGOScoreNumber.Visible = true;
+            }
+
+            if(GOTick == 4)
+            {
+                labelGOReplay.Visible = true;
+                labelGOMainMenu.Visible = true;
+            }
+
+            if (GOTick == 5)
+                timerGameOver.Stop();
+        }
+
         private void Snake_KeyDown(object sender, KeyEventArgs e)
         {
             switch (e.KeyCode)
@@ -387,11 +511,6 @@ namespace Snake
                     {
                         if(direction != 2)
                             newDirection = 4;
-                        break;
-                    }
-                case Keys.Space: // just for tests, should be removed
-                    {
-                        addNewTailPieceChecks(r.Next(1, 4));
                         break;
                     }
             }
