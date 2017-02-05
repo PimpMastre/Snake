@@ -82,11 +82,11 @@
             this.panel1.Controls.Add(this.labelTitle);
             this.panel1.Controls.Add(this.buttonHighScores);
             this.panel1.Controls.Add(this.buttonPlay);
-            this.panel1.Location = new System.Drawing.Point(-1, -1);
-            this.panel1.MaximumSize = new System.Drawing.Size(647, 656);
+            this.panel1.Location = new System.Drawing.Point(0, 0);
+            this.panel1.MaximumSize = new System.Drawing.Size(700, 700);
             this.panel1.MinimumSize = new System.Drawing.Size(647, 656);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(647, 656);
+            this.panel1.Size = new System.Drawing.Size(653, 656);
             this.panel1.TabIndex = 4;
             // 
             // timerGameSpeed
@@ -98,11 +98,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(639, 638);
+            this.ClientSize = new System.Drawing.Size(640, 640);
             this.Controls.Add(this.panel1);
             this.KeyPreview = true;
-            this.MaximumSize = new System.Drawing.Size(655, 677);
-            this.MinimumSize = new System.Drawing.Size(655, 677);
+            this.MaximumSize = new System.Drawing.Size(700, 700);
+            this.MinimumSize = new System.Drawing.Size(655, 666);
             this.Name = "Snake";
             this.Text = "Snake";
             this.Load += new System.EventHandler(this.Snake_Load);
