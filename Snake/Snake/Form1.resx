@@ -135,4 +135,7 @@
   <metadata name="timerBlinkLevel.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
     <value>328, 45</value>
   </metadata>
+  <metadata name="timerRPYesBlink.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
+    <value>450, 46</value>
+  </metadata>
 </root>

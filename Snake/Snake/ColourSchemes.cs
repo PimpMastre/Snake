@@ -170,5 +170,77 @@ namespace Snake
             Snake.activeScheme.Secondary = Color.FromArgb(210, 232, 218);
             Snake.activeScheme.Tertiary = Color.FromArgb(224, 79, 127);
         }
+
+        public void Calls(string paletteID)
+        {
+            if (paletteID == "default_")
+                Default();
+            else
+            if (paletteID == "leaf")
+                Leaf();
+            else
+                if (paletteID == "aqua")
+                Aqua();
+            else
+            if (paletteID == "gameboy")
+                GameBoy();
+            else
+                if (paletteID == "pastel")
+                Pastel();
+            else
+            if (paletteID == "darkred")
+                DarkRed();
+            else
+                if (paletteID == "grayscale")
+                Grayscale();
+            else
+            if (paletteID == "nuclear")
+                Nuclear();
+            else
+                if (paletteID == "onebit")
+                OneBit();
+            else
+            if (paletteID == "bokju")
+                Bokju();
+            else
+                if (paletteID == "purply")
+                Purply();
+            else
+            if (paletteID == "glow")
+                Glow();
+            else
+                if (paletteID == "oldncold")
+                OldNCold();
+            else
+            if (paletteID == "mossy")
+                Mossy();
+            else
+                if (paletteID == "lavender")
+                Lavender();
+            else
+            if (paletteID == "forest")
+                Forest();
+            else
+            if (paletteID == "jungle")
+                Jungle();
+            else
+            if (paletteID == "vivid")
+                Vivid();
+            else
+                if (paletteID == "winter")
+                Winter();
+            else
+            if (paletteID == "antique")
+                Antique();
+            else
+                if (paletteID == "dirtsnow")
+                DirtSnow();
+            else
+            if (paletteID == "mars")
+                Mars();
+            else
+                if (paletteID == "sleepy")
+                Sleepy();
+        }
     }
 }
