@@ -242,7 +242,7 @@ namespace Snake
             if (levelUnlocked && isLoggedIn) labelLevelUnlocked.Visible = true;
             if (paletteUnlocked && isLoggedIn) labelPaletteUnlocked.Visible = true;
 
-            // Ensure level select picture boxes are hidden on main menu
+            // Hide level select picture boxes and the game grid on main menu
             var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
                        ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
             var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
@@ -252,6 +252,10 @@ namespace Snake
             if (pic1 != null) pic1.Visible = false;
             if (pic2 != null) pic2.Visible = false;
             if (pic3 != null) pic3.Visible = false;
+
+            for (int i = 1; i <= pixelDivider; i++)
+                for (int j = 1; j <= pixelDivider; j++)
+                    PB[i, j].Visible = false;
         }
 
         private void HideLabels(Label[] labels)
@@ -369,6 +373,9 @@ namespace Snake
             gameEngine.StartGame((GameEngine.Difficulty)diff, selectedGameLevel, levelMultiplier, edgeScrollingAllowed);
             gameEngine.OnScoreChanged += OnScoreChanged;
             gameEngine.OnGameOver += OnGameOver;
+
+            // Ensure the form has keyboard focus so arrow keys work
+            this.Focus();
 
             // Set initial snake from GameEngine spawn
             var engine = gameEngine;
@@ -1060,6 +1067,12 @@ namespace Snake
         {
             ShowLabels(difficultyLabels);
             ShowLabels(new[] { labelBack });
+
+            // Show the game grid (HideAll hides all PictureBoxes including the grid)
+            for (int i = 1; i <= pixelDivider; i++)
+                for (int j = 1; j <= pixelDivider; j++)
+                    PB[i, j].Visible = true;
+
             labelEdgeScrolling.Visible = true;
             labelEdgeScrollingMP.Visible = true;
             HideLabels(new[] { labelEasyMP, labelMediumMP, labelHardMP, labelExtremeMP });
