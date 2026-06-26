@@ -11,7 +11,7 @@ namespace Snake
         public Color Tertiary { get; set; }
         public Color Level { get; set; }
 
-        private ColourScheme() { }
+        public ColourScheme() { }
 
         private static readonly Dictionary<string, Action<ColourScheme>> SchemeSetters = new Dictionary<string, Action<ColourScheme>>
         {

@@ -1161,19 +1161,17 @@ namespace Snake
                 lbl.ForeColor = colourScheme.Tertiary;
 
                 // Start blink timers for confirmation buttons
-                if (lbl.Name == "labelRPYes" || lbl.Name == "labelDeleteAccountYes" || lbl.Name == "labelVerifyIdentityYes")
+                if (lbl.Name == "labelRPYes")
                 {
-                    string timerName;
-                    if (lbl.Name == "labelRPYes") timerName = "timerRPYesBlink";
-                    else if (lbl.Name == "labelDeleteAccountYes") timerName = "timerDAYesBlink";
-                    else if (lbl.Name == "labelVerifyIdentityYes") timerName = "timerVIBlink";
-                    else timerName = null;
-
-                    if (timerName != null)
-                    {
-                        Timer timer = Controls.Find(timerName, false).FirstOrDefault() as Timer;
-                        if (timer != null) timer.Start();
-                    }
+                    timerRPYesBlink.Start();
+                }
+                else if (lbl.Name == "labelDeleteAccountYes")
+                {
+                    timerDAYesBlink.Start();
+                }
+                else if (lbl.Name == "labelVerifyIdentityYes")
+                {
+                    timerVIBlink.Start();
                 }
             }
         }
@@ -1186,15 +1184,17 @@ namespace Snake
                 lbl.ForeColor = colourScheme.Secondary;
 
                 // Stop blink timers
-                string timerName;
-                if (lbl.Name == "labelRPYes") timerName = "timerRPYesBlink";
-                else if (lbl.Name == "labelDeleteAccountYes") timerName = "timerDAYesBlink";
-                else if (lbl.Name == "labelVerifyIdentityYes") timerName = "timerVIBlink";
-                else timerName = null;
-                if (timerName != null)
+                if (lbl.Name == "labelRPYes")
                 {
-                    Timer timer = Controls.Find(timerName, false).FirstOrDefault() as Timer;
-                    if (timer != null) timer.Stop();
+                    timerRPYesBlink.Stop();
+                }
+                else if (lbl.Name == "labelDeleteAccountYes")
+                {
+                    timerDAYesBlink.Stop();
+                }
+                else if (lbl.Name == "labelVerifyIdentityYes")
+                {
+                    timerVIBlink.Stop();
                 }
             }
         }
