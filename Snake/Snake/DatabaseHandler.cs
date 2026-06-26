@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.OleDb;
+using System.Linq;
 
 namespace Snake
 {
@@ -36,35 +37,48 @@ namespace Snake
             connection.Open();
         }
 
+        private void EnsureOpen()
+        {
+            if (connection == null || connection.State != System.Data.ConnectionState.Open)
+                Connect();
+        }
+
         public void SaveHighScore(string user, int difficulty, int score, int level)
         {
+            EnsureOpen();
             if (!difficultyToTableMap.TryGetValue(difficulty, out var tableName))
                 return;
 
             string columnName = tableName + "Level" + level;
-            string query = $"SELECT [{columnName}] FROM [Users] WHERE [Username] = @user";
 
-            using (var command = new OleDbCommand(query, connection))
+            // Read existing score
+            int existingScore = 0;
+            string selectQuery = $"SELECT [{columnName}] FROM [Users] WHERE [Username] = @user";
+            using (var command = new OleDbCommand(selectQuery, connection))
             {
                 command.Parameters.AddWithValue("@user", user);
                 using (var reader = command.ExecuteReader())
                 {
-                    if (reader.Read() && score > Convert.ToInt32(reader[0]))
-                    {
-                        using (var updateCmd = new OleDbCommand(
-                            $"UPDATE [Users] SET [{columnName}] = @score WHERE [Username] = @user", connection))
-                        {
-                            updateCmd.Parameters.AddWithValue("@score", score);
-                            updateCmd.Parameters.AddWithValue("@user", user);
-                            updateCmd.ExecuteNonQuery();
-                        }
-                    }
+                    if (reader.Read())
+                        existingScore = Convert.ToInt32(reader[0]);
+                }
+            }
+
+            if (score > existingScore)
+            {
+                string updateQuery = $"UPDATE [Users] SET [{columnName}] = @score WHERE [Username] = @user";
+                using (var command = new OleDbCommand(updateQuery, connection))
+                {
+                    command.Parameters.AddWithValue("@score", score);
+                    command.Parameters.AddWithValue("@user", user);
+                    command.ExecuteNonQuery();
                 }
             }
         }
 
         public void SaveProgress(string user)
         {
+            EnsureOpen();
             using (var command = new OleDbCommand(
                 "UPDATE [Users] SET [Level] = @level, [LevelXP] = @levelXP, [UsedPalette] = @palette WHERE [Username] = @user", connection))
             {
@@ -78,6 +92,7 @@ namespace Snake
 
         public void ResetProgress(string user)
         {
+            EnsureOpen();
             var setClause = "Level = @level, LevelXP = @levelXP, UsedPalette = @palette";
             foreach (var col in allScoreColumns)
             {
@@ -97,6 +112,7 @@ namespace Snake
 
         public int DeleteAccount(string user, string password)
         {
+            EnsureOpen();
             using (var command = new OleDbCommand("SELECT [Password] FROM [Users] WHERE [Username] = @user", connection))
             {
                 command.Parameters.AddWithValue("@user", user);
@@ -105,7 +121,7 @@ namespace Snake
                     if (!reader.Read())
                         return 1; // user not found
 
-                    if (password != reader[0].ToString())
+                    if (password != Convert.ToString(reader[0]))
                         return 1; // wrong password
 
                     using (var deleteCmd = new OleDbCommand("DELETE FROM [Users] WHERE [Username] = @user", connection))
@@ -120,6 +136,18 @@ namespace Snake
 
         public void AddNewAccount(string user, string password)
         {
+            EnsureOpen();
+            // OleDb uses positional parameters — all 34 columns must use ? placeholders
+            var values = new object[]
+            {
+                user, password, 1, 0, 1,  // Username, Password, Level, LevelXP, UsedPalette
+                0, 0, 0, 0, 0, 0, 0,    // HSEasy L1-L7
+                0, 0, 0, 0, 0, 0, 0,    // HSMedium L1-L7
+                0, 0, 0, 0, 0, 0, 0,    // HSHard L1-L7
+                0, 0, 0, 0, 0, 0, 0     // HSExtreme L1-L7
+            };
+
+            var placeholders = string.Join(", ", values.Select(_ => "?"));
             string query = "INSERT INTO [Users] ([Username], [Password], [Level], [LevelXP], [UsedPalette], " +
                            "[HSEasyLevel1], [HSEasyLevel2], [HSEasyLevel3], [HSEasyLevel4], [HSEasyLevel5], " +
                            "[HSEasyLevel6], [HSEasyLevel7], [HSMediumLevel1], [HSMediumLevel2], [HSMediumLevel3], " +
@@ -127,18 +155,19 @@ namespace Snake
                            "[HSHardLevel2], [HSHardLevel3], [HSHardLevel4], [HSHardLevel5], [HSHardLevel6], " +
                            "[HSHardLevel7], [HSExtremeLevel1], [HSExtremeLevel2], [HSExtremeLevel3], " +
                            "[HSExtremeLevel4], [HSExtremeLevel5], [HSExtremeLevel6], [HSExtremeLevel7]) " +
-                           "VALUES (@user, @pass, 1, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)";
+                           $"VALUES ({placeholders})";
 
             using (var command = new OleDbCommand(query, connection))
             {
-                command.Parameters.AddWithValue("@user", user);
-                command.Parameters.AddWithValue("@pass", password);
+                foreach (var v in values)
+                    command.Parameters.AddWithValue(null, v);
                 command.ExecuteNonQuery();
             }
         }
 
         public void ReadHighScores(int difficulty, int level, HighScore[] scores)
         {
+            EnsureOpen();
             if (!difficultyToTableMap.TryGetValue(difficulty, out var tableName))
                 return;
 
@@ -162,29 +191,27 @@ namespace Snake
             levelXP = 0;
             userPalette = 0;
 
-            using (var command = new OleDbCommand("SELECT [Password], [Level], [LevelXP], [UsedPalette] FROM [Users] WHERE [Username] = @user", connection))
+            EnsureOpen();
+
+            using (var command = new OleDbCommand(
+                "SELECT [Password], [Level], [LevelXP], [UsedPalette] FROM [Users] WHERE [Username] = @user", connection))
             {
                 command.Parameters.AddWithValue("@user", user);
-                var scalar = command.ExecuteScalar();
-
-                if (scalar == null)
-                    return 1; // user not found
-
                 using (var reader = command.ExecuteReader())
                 {
-                    if (reader.Read())
-                    {
-                        if (password != reader[0].ToString())
-                            return 2; // wrong password
+                    if (!reader.Read())
+                        return 1; // user not found
 
-                        playerLevel = Convert.ToInt32(reader[1]);
-                        levelXP = Convert.ToInt32(reader[2]);
-                        userPalette = Convert.ToInt32(reader[3]);
-                        return 3; // success
-                    }
+                    var dbPassword = Convert.ToString(reader[0]);
+                    if (password != dbPassword)
+                        return 2; // wrong password
+
+                    playerLevel = Convert.ToInt32(reader[1]);
+                    levelXP = Convert.ToInt32(reader[2]);
+                    userPalette = Convert.ToInt32(reader[3]);
+                    return 3; // success
                 }
             }
-            return 1; // fallback
         }
     }
 }
