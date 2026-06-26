@@ -59,6 +59,7 @@ namespace Snake
         private readonly Label[] highScoreScoreLabels = new Label[10];
         private readonly Label[] hsLevelLabels = new Label[7];
         private readonly Label[] hsDifficultyLabels = new Label[4];
+        private readonly Label[] levelSelectLabels;
         private readonly Label[] pauseMenuLabels;
         private readonly Label[] confirmMenuLabels;
 
@@ -77,6 +78,7 @@ namespace Snake
             difficultyLabels = FindControlsByPrefix("labelDifficultyEasy", "labelDifficultyMedium", "labelDifficultyHard", "labelDifficultyExtreme");
             hsLevelLabels = FindControlsByPrefix("labelHSLevel1", "labelHSLevel2", "labelHSLevel3", "labelHSLevel4", "labelHSLevel5", "labelHSLevel6", "labelHSLevel7");
             hsDifficultyLabels = FindControlsByPrefix("labelHighScoresEasy", "labelHighScoresMedium", "labelHighScoresHard", "labelHighScoresExtreme");
+            levelSelectLabels = FindControlsByPrefix("labelStartGame");
             pauseMenuLabels = FindControlsByPrefix("labelPausedMainMenu", "labelPauseGP", "labelPauseRestart", "labelPauseResume");
             confirmMenuLabels = FindControlsByPrefix("labelPGRestartYes", "labelPGRestartNo", "labelPGMainMenuYes", "labelPGMainMenuNo", "labelMainQuitYes", "labelMainQuitNo", "labelRPYes", "labelRPNo", "labelDeleteAccountYes", "labelDeleteAccountNo", "labelVerifyIdentityYes", "labelVerifyIdentityNo");
 
@@ -240,6 +242,17 @@ namespace Snake
 
             if (levelUnlocked && isLoggedIn) labelLevelUnlocked.Visible = true;
             if (paletteUnlocked && isLoggedIn) labelPaletteUnlocked.Visible = true;
+
+            // Ensure level select picture boxes are hidden on main menu
+            var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
+            var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
+            var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
+            if (pic1 != null) pic1.Visible = false;
+            if (pic2 != null) pic2.Visible = false;
+            if (pic3 != null) pic3.Visible = false;
         }
 
         private void HideLabels(Label[] labels)
@@ -598,7 +611,8 @@ namespace Snake
             RemoveTitle();
             levelUnlocked = false;
 
-            ShowLabels(new[] { labelLevelSelectTop, labelBack });
+            ShowLabels(new[] { labelLevelSelectTop, labelBack, labelStartGame });
+            ShowLabels(levelSelectLabels);
             labelLSDifficultyTop.Visible = true;
             labelLSDifficultyChange.Visible = true;
             labelLSMultiplierBonusTop.Visible = true;
@@ -611,9 +625,9 @@ namespace Snake
             var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
                        ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
 
-            if (pic1 != null) { pic1.Visible = selectedGameLevel > 1; }
-            if (pic2 != null) { pic2.Visible = true; }
-            if (pic3 != null) { pic3.Visible = selectedGameLevel < 7; }
+            if (pic1 != null) pic1.Visible = selectedGameLevel > 1;
+            if (pic2 != null) pic2.Visible = true;
+            if (pic3 != null) pic3.Visible = selectedGameLevel < 7;
 
             UpdateLevelImages();
         }
@@ -766,12 +780,10 @@ namespace Snake
             labelPalette2.Visible = true;
             labelPalette2.ForeColor = colourScheme.Tertiary;
 
-            if (paletteIndex < 23)
+            if (paletteIndex < 23 && !imageHandler.IsLocked(paletteIndex + 1))
             {
                 labelPalette3.Text = paletteList[paletteIndex + 1];
                 labelPalette3.Visible = true;
-                if (SnakeClass.GetPlayerLevel() != paletteIndex + 1)
-                    labelPalette3.Visible = true;
             }
 
             CenterPalettes();
@@ -793,6 +805,8 @@ namespace Snake
 
         private void labelPalette3_Click(object sender, EventArgs e)
         {
+            if (paletteIndex >= 23 || imageHandler.IsLocked(paletteIndex + 1))
+                return;
             paletteIndex++;
             ApplyPalette();
             labelPalette3_MouseEnter(sender, e);
@@ -814,12 +828,10 @@ namespace Snake
 
             labelPalette2.Text = paletteList[paletteIndex];
 
-            if (paletteIndex < 23)
+            if (paletteIndex < 23 && !imageHandler.IsLocked(paletteIndex + 1))
             {
                 labelPalette3.Text = paletteList[paletteIndex + 1];
                 labelPalette3.Visible = true;
-                if (SnakeClass.GetPlayerLevel() != paletteIndex + 1)
-                    labelPalette3.Visible = true;
             }
 
             CenterPalettes();
@@ -1024,6 +1036,10 @@ namespace Snake
                 selectedGameLevel++;
                 UpdateLevelImages();
             }
+            else
+            {
+                // Already at last level — do nothing
+            }
         }
 
         private void HideLevelSelect()
@@ -1035,7 +1051,8 @@ namespace Snake
             var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
                        ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
 
-            HideLabels(new[] { labelLevelSelectTop });
+            HideLabels(new[] { labelLevelSelectTop, labelStartGame });
+            HideLabels(levelSelectLabels);
             if (pic1 != null) pic1.Visible = false;
             if (pic2 != null) pic2.Visible = false;
             if (pic3 != null) pic3.Visible = false;
@@ -1045,6 +1062,7 @@ namespace Snake
         private void ShowDifficultySelect()
         {
             ShowLabels(difficultyLabels);
+            ShowLabels(new[] { labelBack });
             labelEdgeScrolling.Visible = true;
             labelEdgeScrollingMP.Visible = true;
             HideLabels(new[] { labelEasyMP, labelMediumMP, labelHardMP, labelExtremeMP });
@@ -1109,8 +1127,9 @@ namespace Snake
             HideLabels(difficultyLabels);
             HideLabels(new[] { labelEdgeScrolling, labelEdgeScrollingMP, labelEasyMP, labelMediumMP, labelHardMP, labelExtremeMP });
 
-            ShowLabels(new[] { labelBack });
+            ShowLabels(new[] { labelBack, labelStartGame });
             ShowLabels(new[] { labelLevelSelectTop });
+            ShowLabels(levelSelectLabels);
             var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
                        ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
             var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
