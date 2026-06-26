@@ -45,3 +45,20 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
+
+# =========================
+# .NET / Visual Studio
+# =========================
+
+# Build outputs
+[Ss]nake/[Ss]nake/bin/
+[Ss]nake/[Ss]nake/obj/
+[Ss]nake/[Ss]nake/*.user
+[Ss]nake/[Ss]nake/*.suo
+
+# Visual Studio
+[Ss]nake/[Ss]nake/.vs/
+
+# Database
+[Ss]nake/[Ss]nake/*.accdb
+[Ss]nake/[Ss]nake/*.ldb

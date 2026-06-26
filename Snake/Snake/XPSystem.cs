@@ -1,61 +1,40 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Snake;
 
 namespace Snake
 {
-    class XPSystem
+    public class XPSystem
     {
-        public int requiredXP(int userLevel)
+        private static readonly int[] RequiredXPTable = {
+            100,   // level 1
+            150,   // level 2
+            200,   // level 3
+            300,   // level 4
+            350,   // level 5
+            350,   // level 6
+            370,   // level 7
+            390,   // level 8
+            400,   // level 9
+            410,   // level 10
+            420,   // level 11
+            450,   // level 12
+            460,   // level 13
+            470,   // level 14
+            490,   // level 15
+            500,   // level 16
+            500,   // level 17
+            500,   // level 18
+            510,   // level 19
+            520,   // level 20
+            550,   // level 21
+            600,   // level 22
+            9001   // level 23+ (capped)
+        };
+
+        public int GetRequiredXP(int userLevel)
         {
-            if (userLevel == 1)
-                return 100;
-            if (userLevel == 2)
-                return 150;
-            if (userLevel == 3)
-                return 200;
-            if (userLevel == 4)
-                return 300;
-            if (userLevel == 5)
-                return 350;
-            if (userLevel == 6)
-                return 350;
-            if (userLevel == 7)
-                return 370;
-            if (userLevel == 8)
-                return 390;
-            if (userLevel == 9)
-                return 400;
-            if (userLevel == 10)
-                return 410;
-            if (userLevel == 11)
-                return 420;
-            if (userLevel == 12)
-                return 450;
-            if (userLevel == 13)
-                return 460;
-            if (userLevel == 14)
-                return 470;
-            if (userLevel == 15)
-                return 490;
-            if (userLevel == 16)
-                return 500;
-            if (userLevel == 17)
-                return 500;
-            if (userLevel == 18)
-                return 500;
-            if (userLevel == 19)
-                return 510;
-            if (userLevel == 20)
-                return 520;
-            if (userLevel == 21)
-                return 550;
-            if (userLevel == 22)
-                return 600;
-            return 9001;
+            if (userLevel < 1 || userLevel > RequiredXPTable.Length)
+                return 9001;
+            return RequiredXPTable[userLevel - 1];
         }
     }
 }

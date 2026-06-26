@@ -1,99 +1,57 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Snake
 {
-    class ImageHandler
+    public class ImageHandler
     {
-        public bool verifyIsLocked(int levelno)
+        private static readonly Dictionary<int, string> LockedImages = new Dictionary<int, string>
         {
-            //levels unlock at 3, 7, 11, 14, 18, 21
-            if (levelno == 1)
-                return false;
+            { 1, "img/one.png" },
+            { 2, "img/twoLocked.png" },
+            { 3, "img/threeLocked.png" },
+            { 4, "img/fourLocked.png" },
+            { 5, "img/fiveLocked.png" },
+            { 6, "img/sixLocked.png" },
+            { 7, "img/sevenLocked.png" }
+        };
 
-            if (levelno == 2)
-                if (Snake.level < 3)
-                    return true;
-                else
-                    return false;
+        private static readonly Dictionary<int, string> UnlockedImages = new Dictionary<int, string>
+        {
+            { 1, "img/one.png" },
+            { 2, "img/two.png" },
+            { 3, "img/three.png" },
+            { 4, "img/four.png" },
+            { 5, "img/five.png" },
+            { 6, "img/six.png" },
+            { 7, "img/seven.png" }
+        };
 
-            if (levelno == 3)
-                if (Snake.level < 7)
-                    return true;
-                else
-                    return false;
+        private static readonly int[] LevelUnlockThresholds = {
+            0,    // level 1 - no threshold (always available)
+            2,    // level 2 unlocks at player level 3
+            6,    // level 3 unlocks at player level 7
+            10,   // level 4 unlocks at player level 11
+            13,   // level 5 unlocks at player level 14
+            17,   // level 6 unlocks at player level 18
+            20    // level 7 unlocks at player level 21
+        };
 
-            if (levelno == 4)
-                if (Snake.level < 11)
-                    return true;
-                else
-                    return false;
-
-            if (levelno == 5)
-                if(Snake.level < 14)
+        public bool IsLocked(int levelNo)
+        {
+            if (levelNo < 1 || levelNo > 7)
                 return true;
-            else
-                return false;
-
-            if (levelno == 6)
-                if (Snake.level < 18)
-                return true;
-            else
-                return false;
-
-            if (levelno == 7)
-                if (Snake.level < 21)
-                    return true;
-                else
-                    return false;
-
-            return true;
+            return SnakeClass.GetPlayerLevel() < LevelUnlockThresholds[levelNo];
         }
 
-        public string GetImage(int levelno)
+        public string GetImage(int levelNo)
         {
-            if (levelno == 1)
-                return "img/one.png";
-            else
-                if (levelno == 2)
-                if (verifyIsLocked(2) == true)
-                    return "img/twoLocked.png";
-                else
-                    return "img/two.png";
-            else
-                if (levelno == 3)
-                if (verifyIsLocked(3) == true)
-                    return "img/threeLocked.png";
-                else
-                    return "img/three.png";
-            else
-                if (levelno == 4)
-                if (verifyIsLocked(4) == true)
-                    return "img/fourLocked.png";
-                else
-                    return "img/four.png";
-            else
-                if (levelno == 5)
-                if (verifyIsLocked(5) == true)
-                    return "img/fiveLocked.png";
-                else
-                    return "img/five.png";
-            else
-                if (levelno == 6)
-                if (verifyIsLocked(6) == true)
-                    return "img/sixLocked.png";
-                else
-                    return "img/six.png";
-            else
-                if (levelno == 7)
-                if (verifyIsLocked(7) == true)
-                    return "img/sevenLocked.png";
-                else
-                    return "img/seven.png";
-            return "";
+            if (levelNo < 1 || levelNo > 7)
+                return string.Empty;
+
+            if (IsLocked(levelNo))
+                return LockedImages[levelNo];
+            return UnlockedImages[levelNo];
         }
     }
 }

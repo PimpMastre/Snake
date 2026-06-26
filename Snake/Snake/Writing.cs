@@ -1,119 +1,85 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Drawing;
 using System.Windows.Forms;
-using Snake;
-
-/* AR TREBUI SA ARATE ASA:
- * PENTRU LITERA A
- *  ##   S>E
- * #  #  D  D
- * ####   >E
- * #  #
- * #  #  E  E
- *  */
 
 namespace Snake
 {
+    /// <summary>
+    /// Animated letter drawing for the title screen.
+    /// Draws pixel-art letters frame-by-frame on the grid.
+    /// </summary>
     public class Writing
     {
-        public void drawALetter(int locationX, int locationY, int tick)
+        private void DrawPixel(int x, int y, Color color)
         {
-            int sJ = 4, dJ = 4, sA = 2, jA = 2;
-
-            if (tick <= sJ)
-                Snake.PB[locationX + tick, locationY].BackColor = Snake.activeScheme.Tertiary;
-
-            if(tick <= dJ)
-                Snake.PB[locationX + tick, locationY + 3].BackColor = Snake.activeScheme.Tertiary;
-
-            if(tick <= sA)
-                Snake.PB[locationX, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
-
-            if(tick <= jA)
-                Snake.PB[locationX + 2, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
-        }
-
-        public void drawELetter(int locationX, int locationY, int tick)
-        {
-            int sJ = 5, sA = 3, mA = 2, jA = 3;
-
-            if (tick <= sJ)
-                Snake.PB[locationX + tick - 1, locationY].BackColor = Snake.activeScheme.Tertiary;
-
-            if (tick <= sA)
-                Snake.PB[locationX, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
-
-            if (tick <= mA)
-                Snake.PB[locationX + 2, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
-
-            if (tick <= jA)
-                Snake.PB[locationX + 4, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
-        }
-
-        public void drawKLetter(int locationX, int locationY, int tick)
-        {
-            int sJ = 5, P1 = 2, P2 = 3, P3 = 4;
-
-            if (tick <= sJ)
-                Snake.PB[locationX + tick - 1, locationY].BackColor = Snake.activeScheme.Tertiary;
-
-            if(tick == P1)
-                Snake.PB[locationX + 2, locationY + 1].BackColor = Snake.activeScheme.Tertiary;
-
-            if(tick == P2)
+            if (x >= 1 && x <= 32 && y >= 1 && y <= 32)
             {
-                Snake.PB[locationX + 1, locationY + 2].BackColor = Snake.activeScheme.Tertiary;
-                Snake.PB[locationX + 3, locationY + 2].BackColor = Snake.activeScheme.Tertiary;
-            }
-            
-            if(tick == P3)
-            {
-                Snake.PB[locationX, locationY + 3].BackColor = Snake.activeScheme.Tertiary;
-                Snake.PB[locationX + 4, locationY + 3].BackColor = Snake.activeScheme.Tertiary;
+                var pb = SnakeForm.GridControls[x, y];
+                if (pb != null) pb.BackColor = color;
             }
         }
 
-        public void drawNLetter(int locationX, int locationY, int tick)
+        public void DrawSLetter(int locationX, int locationY, int tick)
         {
-            int sJ = 5, dJ = 5, P1 = 2, P2 = 3;
-
-            if(tick <= sJ)
-                Snake.PB[locationX + tick - 1, locationY].BackColor = Snake.activeScheme.Tertiary;
-            
-            if(tick <= dJ)
-                Snake.PB[locationX + tick - 1, locationY + 3].BackColor = Snake.activeScheme.Tertiary;
-            
-            if(tick == P1)
-                Snake.PB[locationX + P1, locationY + 1].BackColor = Snake.activeScheme.Tertiary;
-
-            if(tick == P2)
-                Snake.PB[locationX + P2, locationY + 2].BackColor = Snake.activeScheme.Tertiary;
-        }
-
-        public void drawSLetter(int locationX, int locationY, int tick)
-        {
+            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
             int sA = 3, mA = 2, jA = 3, P1 = 2, P2 = 3;
 
-            if(tick <= sA)
-                Snake.PB[locationX, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
+            if (tick <= sA) DrawPixel(locationX, locationY + tick, tertiary);
+            if (tick <= mA) DrawPixel(locationX + 2, locationY + tick, tertiary);
+            if (tick <= jA) DrawPixel(locationX + 4, locationY + tick - 1, tertiary);
+            if (tick == P1) DrawPixel(locationX + 1, locationY, tertiary);
+            if (tick == P2) DrawPixel(locationX + 3, locationY + 3, tertiary);
+        }
 
-            if(tick <= mA)
-                Snake.PB[locationX + 2, locationY + tick].BackColor = Snake.activeScheme.Tertiary;
+        public void DrawNLetter(int locationX, int locationY, int tick)
+        {
+            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            int sJ = 5, dJ = 5, P1 = 2, P2 = 3;
 
-            if(tick <= jA)
-                Snake.PB[locationX + 4, locationY + tick - 1].BackColor = Snake.activeScheme.Tertiary;
+            if (tick <= sJ) DrawPixel(locationX + tick - 1, locationY, tertiary);
+            if (tick <= dJ) DrawPixel(locationX + tick - 1, locationY + 3, tertiary);
+            if (tick == P1) DrawPixel(locationX + P1, locationY + 1, tertiary);
+            if (tick == P2) DrawPixel(locationX + P2, locationY + 2, tertiary);
+        }
 
-            if(tick == P1)
-                Snake.PB[locationX + 1, locationY].BackColor = Snake.activeScheme.Tertiary;
+        public void DrawALetter(int locationX, int locationY, int tick)
+        {
+            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            int sJ = 4, dJ = 4, sA = 2, jA = 2;
 
-            if(tick == P2)
-                Snake.PB[locationX + 3, locationY + 3].BackColor = Snake.activeScheme.Tertiary;
+            if (tick <= sJ) DrawPixel(locationX + tick, locationY, tertiary);
+            if (tick <= dJ) DrawPixel(locationX + tick, locationY + 3, tertiary);
+            if (tick <= sA) DrawPixel(locationX, locationY + tick, tertiary);
+            if (tick <= jA) DrawPixel(locationX + 2, locationY + tick, tertiary);
+        }
+
+        public void DrawKLetter(int locationX, int locationY, int tick)
+        {
+            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            int sJ = 5, P1 = 2, P2 = 3, P3 = 4;
+
+            if (tick <= sJ) DrawPixel(locationX + tick - 1, locationY, tertiary);
+            if (tick == P1) DrawPixel(locationX + 2, locationY + 1, tertiary);
+            if (tick == P2)
+            {
+                DrawPixel(locationX + 1, locationY + 2, tertiary);
+                DrawPixel(locationX + 3, locationY + 2, tertiary);
+            }
+            if (tick == P3)
+            {
+                DrawPixel(locationX, locationY + 3, tertiary);
+                DrawPixel(locationX + 4, locationY + 3, tertiary);
+            }
+        }
+
+        public void DrawELetter(int locationX, int locationY, int tick)
+        {
+            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            int sJ = 5, sA = 3, mA = 2, jA = 3;
+
+            if (tick <= sJ) DrawPixel(locationX + tick - 1, locationY, tertiary);
+            if (tick <= sA) DrawPixel(locationX, locationY + tick, tertiary);
+            if (tick <= mA) DrawPixel(locationX + 2, locationY + tick, tertiary);
+            if (tick <= jA) DrawPixel(locationX + 4, locationY + tick, tertiary);
         }
     }
 }
