@@ -376,7 +376,7 @@ namespace Snake
                     }
                 }
             }
-            catch (Exception ex)
+            catch
             {
                 // Fallback: clear map if file not found
                 for (int x = 1; x <= gridSize; x++)

@@ -1,5 +1,4 @@
 ﻿using System.Drawing;
-using System.Windows.Forms;
 
 namespace Snake
 {
@@ -13,14 +12,14 @@ namespace Snake
         {
             if (x >= 1 && x <= 32 && y >= 1 && y <= 32)
             {
-                var pb = SnakeForm.GridControls[x, y];
+                PictureBox pb = Snake.GridControls[x, y];
                 if (pb != null) pb.BackColor = color;
             }
         }
 
         public void DrawSLetter(int locationX, int locationY, int tick)
         {
-            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            Color tertiary = (Snake.ActiveScheme != null) ? Snake.ActiveScheme.Tertiary : Color.Red;
             int sA = 3, mA = 2, jA = 3, P1 = 2, P2 = 3;
 
             if (tick <= sA) DrawPixel(locationX, locationY + tick, tertiary);
@@ -32,7 +31,7 @@ namespace Snake
 
         public void DrawNLetter(int locationX, int locationY, int tick)
         {
-            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            Color tertiary = (Snake.ActiveScheme != null) ? Snake.ActiveScheme.Tertiary : Color.Red;
             int sJ = 5, dJ = 5, P1 = 2, P2 = 3;
 
             if (tick <= sJ) DrawPixel(locationX + tick - 1, locationY, tertiary);
@@ -43,7 +42,7 @@ namespace Snake
 
         public void DrawALetter(int locationX, int locationY, int tick)
         {
-            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            Color tertiary = (Snake.ActiveScheme != null) ? Snake.ActiveScheme.Tertiary : Color.Red;
             int sJ = 4, dJ = 4, sA = 2, jA = 2;
 
             if (tick <= sJ) DrawPixel(locationX + tick, locationY, tertiary);
@@ -54,7 +53,7 @@ namespace Snake
 
         public void DrawKLetter(int locationX, int locationY, int tick)
         {
-            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            Color tertiary = (Snake.ActiveScheme != null) ? Snake.ActiveScheme.Tertiary : Color.Red;
             int sJ = 5, P1 = 2, P2 = 3, P3 = 4;
 
             if (tick <= sJ) DrawPixel(locationX + tick - 1, locationY, tertiary);
@@ -73,7 +72,7 @@ namespace Snake
 
         public void DrawELetter(int locationX, int locationY, int tick)
         {
-            var tertiary = SnakeForm.ActiveScheme?.Tertiary ?? Color.Red;
+            Color tertiary = (Snake.ActiveScheme != null) ? Snake.ActiveScheme.Tertiary : Color.Red;
             int sJ = 5, sA = 3, mA = 2, jA = 3;
 
             if (tick <= sJ) DrawPixel(locationX + tick - 1, locationY, tertiary);

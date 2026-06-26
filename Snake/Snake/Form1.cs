@@ -15,7 +15,7 @@ namespace Snake
         private string[] paletteList;
         private int paletteIndex;
         private bool isLoggedIn;
-        private string currentUser;
+        // SnakeClass.GetCurrentUser() is managed via SnakeClass.GetCurrentUser()
         private int selectedHSMenu = 1;
         private int selectedHSMenuLevel = 1;
         private int selectedGameLevel = 1;
@@ -61,7 +61,6 @@ namespace Snake
         private readonly Label[] hsDifficultyLabels = new Label[4];
         private readonly Label[] pauseMenuLabels;
         private readonly Label[] confirmMenuLabels;
-        private readonly Label[] verifyLabels;
 
         public Snake()
         {
@@ -69,20 +68,17 @@ namespace Snake
             paletteIndex = 1;
 
             // Build label arrays for bulk operations
-            mainMenuLabels = FindControlsByPrefix<Label>("labelPlay", "labelHighScores", "labelExit", "labelOptions");
-            difficultyLabels = FindControlsByPrefix<Label>("labelDifficultyEasy", "labelDifficultyMedium", "labelDifficultyHard", "labelDifficultyExtreme");
-            hsLevelLabels = FindControlsByPrefix<Label>(
-                labelHSLevel1, labelHSLevel2, labelHSLevel3, labelHSLevel4,
-                labelHSLevel5, labelHSLevel6, labelHSLevel7);
-            hsDifficultyLabels = FindControlsByPrefix<Label>(
-                labelHighScoresEasy, labelHighScoresMedium, labelHighScoresHard, labelHighScoresExtreme);
-            pauseMenuLabels = FindControlsByPrefix<Label>("labelPausedMainMenu", "labelPauseGP", "labelPauseRestart", "labelPauseResume");
-            confirmMenuLabels = FindControlsByPrefix<Label>("labelPGRestartYes", "labelPGRestartNo", "labelPGMainMenuYes", "labelPGMainMenuNo", "labelMainQuitYes", "labelMainQuitNo", "labelRPYes", "labelRPNo", "labelDeleteAccountYes", "labelDeleteAccountNo", "labelVerifyIdentityYes", "labelVerifyIdentityNo");
+            mainMenuLabels = FindControlsByPrefix("labelPlay", "labelHighScores", "labelExit", "labelOptions");
+            difficultyLabels = FindControlsByPrefix("labelDifficultyEasy", "labelDifficultyMedium", "labelDifficultyHard", "labelDifficultyExtreme");
+            hsLevelLabels = FindControlsByPrefix("labelHSLevel1", "labelHSLevel2", "labelHSLevel3", "labelHSLevel4", "labelHSLevel5", "labelHSLevel6", "labelHSLevel7");
+            hsDifficultyLabels = FindControlsByPrefix("labelHighScoresEasy", "labelHighScoresMedium", "labelHighScoresHard", "labelHighScoresExtreme");
+            pauseMenuLabels = FindControlsByPrefix("labelPausedMainMenu", "labelPauseGP", "labelPauseRestart", "labelPauseResume");
+            confirmMenuLabels = FindControlsByPrefix("labelPGRestartYes", "labelPGRestartNo", "labelPGMainMenuYes", "labelPGMainMenuNo", "labelMainQuitYes", "labelMainQuitNo", "labelRPYes", "labelRPNo", "labelDeleteAccountYes", "labelDeleteAccountNo", "labelVerifyIdentityYes", "labelVerifyIdentityNo");
 
             for (int i = 0; i < 10; i++)
             {
-                highScoreNameLabels[i] = FindLabelByName($"labelName{i + 1}");
-                highScoreScoreLabels[i] = FindLabelByName($"labelScore{i + 1}");
+                highScoreNameLabels[i] = FindLabelByName("labelName" + (i + 1));
+                highScoreScoreLabels[i] = FindLabelByName("labelScore" + (i + 1));
             }
 
             colourSchemes = new ColourSchemes(colourScheme);
@@ -92,21 +88,20 @@ namespace Snake
             dbHandler.Initialise();
         }
 
-        private T[] FindControlsByPrefix<T>(params string[] prefixes) where T : Control
+        private Label[] FindControlsByPrefix(params string[] prefixes)
         {
-            var result = new System.Collections.Generic.List<T>();
-            var existing = new System.Collections.Generic.List<string>(prefixes.Where(p => p != null));
-            foreach (string prefix in existing)
+            var result = new System.Collections.Generic.List<Label>();
+            foreach (string prefix in prefixes)
             {
-                var c = Controls.Find(prefix, false).FirstOrDefault() as T;
+                var c = Controls.Find(prefix, false).FirstOrDefault() as Label;
                 if (c != null) result.Add(c);
             }
             return result.ToArray();
         }
 
-        private T FindLabelByName<T>(string name) where T : Control
+        private Label FindLabelByName(string name)
         {
-            return Controls.Find(name, false).FirstOrDefault() as T;
+            return Controls.Find(name, false).FirstOrDefault() as Label;
         }
 
         // ===== COLOUR SCHEME =====
@@ -279,7 +274,8 @@ namespace Snake
                 leveledUp = true;
                 reqXP = xpSystem.GetRequiredXP(SnakeClass.GetPlayerLevel());
                 paletteUnlocked = true;
-                if (SnakeClass.GetPlayerLevel() is 3 or 7 or 11 or 14 or 18 or 21)
+                int curLevel = SnakeClass.GetPlayerLevel();
+                if (curLevel == 3 || curLevel == 7 || curLevel == 11 || curLevel == 14 || curLevel == 18 || curLevel == 21)
                     levelUnlocked = true;
             }
 
@@ -307,23 +303,15 @@ namespace Snake
             timerBlinkRate.Start();
 
             // Set difficulty
-            scoreMultiplier = diff switch
+            switch (diff)
             {
-                1 => 1,
-                2 => 2,
-                3 => 3,
-                4 => 5,
-                _ => 1
-            };
+                case 1: scoreMultiplier = 1; gameSpeed = 250; break;
+                case 2: scoreMultiplier = 2; gameSpeed = 150; break;
+                case 3: scoreMultiplier = 3; gameSpeed = 50; break;
+                case 4: scoreMultiplier = 5; gameSpeed = 30; break;
+                default: scoreMultiplier = 1; gameSpeed = 250; break;
+            }
             currentDifficulty = diff;
-            gameSpeed = diff switch
-            {
-                1 => 250,
-                2 => 150,
-                3 => 50,
-                4 => 30,
-                _ => 250
-            };
 
             gameEngine.SetEdgeScrollingAllowed(edgeScrollingAllowed);
             gameEngine.SetNeedsEdgeScrolling(needsEdgeScrolling);
@@ -361,13 +349,12 @@ namespace Snake
         private void OnGameOver()
         {
             gameStarted = false;
-            gameStopped = true;
 
             // Save data
             if (isLoggedIn)
             {
-                dbHandler.SaveHighScore(currentUser, currentDifficulty, gameScore, selectedGameLevel);
-                dbHandler.SaveProgress(currentUser);
+                dbHandler.SaveHighScore(SnakeClass.GetCurrentUser(), currentDifficulty, gameScore, selectedGameLevel);
+                dbHandler.SaveProgress(SnakeClass.GetCurrentUser());
             }
 
             // Recolor grid to primary
@@ -471,7 +458,8 @@ namespace Snake
                         if (leveledUp)
                         {
                             timerBlinkLevel.Start();
-                            labelLevelUpUnlocks.Text = SnakeClass.GetPlayerLevel() is 3 or 7 or 11 or 14 or 18 or 21
+                            int hsLevel = SnakeClass.GetPlayerLevel();
+                            labelLevelUpUnlocks.Text = (hsLevel == 3 || hsLevel == 7 || hsLevel == 11 || hsLevel == 14 || hsLevel == 18 || hsLevel == 21)
                                 ? "NEW PALETTE AND LEVEL UNLOCKED"
                                 : "NEW PALETTE UNLOCKED";
                             labelLevelUpUnlocks.Left = (ClientSize.Width - labelLevelUpUnlocks.Width) / 2;
@@ -617,15 +605,19 @@ namespace Snake
 
         private void UpdateLevelDifficultyDisplay()
         {
-            var (diffText, multText) = selectedGameLevel switch
+            string diffText;
+            string multText;
+            switch (selectedGameLevel)
             {
-                1 => ("NONE", "+0"),
-                2 => ("EASY", "+1"),
-                3 or 4 => ("MEDIUM", "+2"),
-                5 => ("HARD", "+3"),
-                6 or 7 => ("EXTREME", "+4"),
-                _ => ("NONE", "+0")
-            };
+                case 1: diffText = "NONE"; multText = "+0"; break;
+                case 2: diffText = "EASY"; multText = "+1"; break;
+                case 3:
+                case 4: diffText = "MEDIUM"; multText = "+2"; break;
+                case 5: diffText = "HARD"; multText = "+3"; break;
+                case 6:
+                case 7: diffText = "EXTREME"; multText = "+4"; break;
+                default: diffText = "NONE"; multText = "+0"; break;
+            }
             labelLSDifficultyChange.Text = diffText;
             labelLSMultiplierBonusChange.Text = multText;
             labelLSDifficultyChange.Left = labelLSDifficultyTop.Left + ((labelLSDifficultyTop.Width - labelLSDifficultyChange.Width) / 2);
@@ -679,7 +671,7 @@ namespace Snake
 
         private void labelMainQuitYes_Click(object sender, EventArgs e)
         {
-            if (isLoggedIn) dbHandler.SaveProgress(currentUser);
+            if (isLoggedIn) dbHandler.SaveProgress(SnakeClass.GetCurrentUser());
             Close();
         }
 
@@ -706,7 +698,7 @@ namespace Snake
 
         private void labelLogOut_Click(object sender, EventArgs e)
         {
-            dbHandler.SaveProgress(currentUser);
+            dbHandler.SaveProgress(SnakeClass.GetCurrentUser());
             SnakeClass.SetLoggedOut();
             labelPlay.Text = "LOG IN";
             labelPlay.Left = (ClientSize.Width - labelPlay.Width) / 2;
@@ -828,7 +820,7 @@ namespace Snake
             SnakeClass.LevelXP = 0;
             SnakeClass.SelectedPalette = 1;
             paletteIndex = 1;
-            dbHandler.ResetProgress(currentUser);
+            dbHandler.ResetProgress(SnakeClass.GetCurrentUser());
             HideLabels(new[] { labelRPQuestion, labelRPYes, labelRPNo });
             labelOptions_Click(sender, e);
         }
@@ -856,7 +848,7 @@ namespace Snake
 
         private void labelVerifyIdentityYes_Click(object sender, EventArgs e)
         {
-            var result = dbHandler.DeleteAccount(currentUser, textBoxVerifyIdentityPass.Text);
+            var result = dbHandler.DeleteAccount(SnakeClass.GetCurrentUser(), textBoxVerifyIdentityPass.Text);
             if (result == 1)
             {
                 labelVerifyIdentityIncorrectPass.Visible = true;
@@ -1030,7 +1022,8 @@ namespace Snake
             // Level-specific settings
             switch (selectedGameLevel)
             {
-                case 4 or 5:
+                case 4:
+                case 5:
                     labelEdgeScrolling.Visible = false;
                     labelEdgeScrollingMP.Visible = false;
                     edgeScrollingAllowed = true;
@@ -1048,10 +1041,17 @@ namespace Snake
                     break;
             }
 
-            levelMultiplier = selectedGameLevel switch
+            switch (selectedGameLevel)
             {
-                1 => 0, 2 => 1, 3 => 2, 4 => 2, 5 => 3, 6 => 4, 7 => 4, _ => 0
-            };
+                case 1: levelMultiplier = 0; break;
+                case 2: levelMultiplier = 1; break;
+                case 3: levelMultiplier = 2; break;
+                case 4: levelMultiplier = 2; break;
+                case 5: levelMultiplier = 3; break;
+                case 6: levelMultiplier = 4; break;
+                case 7: levelMultiplier = 4; break;
+                default: levelMultiplier = 0; break;
+            }
         }
 
         private void labelDifficultyEasy_Click(object sender, EventArgs e) => StartGame(1);
@@ -1074,9 +1074,12 @@ namespace Snake
 
             ShowLabels(new[] { labelBack });
             ShowLabels(new[] { labelLevelSelectTop });
-            labelLevelSelect1.Visible = selectedGameLevel > 1;
-            labelLevelSelect2.Visible = true;
-            labelLevelSelect3.Visible = selectedGameLevel < 7;
+            var pic1 = Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
+            var pic2 = Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
+            var pic3 = Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
+            if (pic1 != null) pic1.Visible = selectedGameLevel > 1;
+            if (pic2 != null) pic2.Visible = true;
+            if (pic3 != null) pic3.Visible = selectedGameLevel < 7;
             ShowLabels(new[] { labelLSDifficultyTop, labelLSDifficultyChange, labelLSMultiplierBonusTop, labelLSMultiplierBonusChange });
         }
 
@@ -1152,24 +1155,24 @@ namespace Snake
 
         private void SharedMouseEnter(object sender, EventArgs e)
         {
-            if (sender is Label lbl)
+            Label lbl = sender as Label;
+            if (lbl != null)
             {
                 lbl.ForeColor = colourScheme.Tertiary;
 
                 // Start blink timers for confirmation buttons
-                if (lbl.Name is "labelRPYes" or "labelDeleteAccountYes" or "labelVerifyIdentityYes")
+                if (lbl.Name == "labelRPYes" || lbl.Name == "labelDeleteAccountYes" || lbl.Name == "labelVerifyIdentityYes")
                 {
-                    var timerName = lbl.Name switch
-                    {
-                        "labelRPYes" => "timerRPYesBlink",
-                        "labelDeleteAccountYes" => "timerDAYesBlink",
-                        "labelVerifyIdentityYes" => "timerVIBlink",
-                        _ => null
-                    };
+                    string timerName;
+                    if (lbl.Name == "labelRPYes") timerName = "timerRPYesBlink";
+                    else if (lbl.Name == "labelDeleteAccountYes") timerName = "timerDAYesBlink";
+                    else if (lbl.Name == "labelVerifyIdentityYes") timerName = "timerVIBlink";
+                    else timerName = null;
+
                     if (timerName != null)
                     {
-                        var timer = Controls.Find(timerName, false).FirstOrDefault() as Timer;
-                        timer?.Start();
+                        Timer timer = Controls.Find(timerName, false).FirstOrDefault() as Timer;
+                        if (timer != null) timer.Start();
                     }
                 }
             }
@@ -1177,22 +1180,21 @@ namespace Snake
 
         private void SharedMouseLeave(object sender, EventArgs e)
         {
-            if (sender is Label lbl)
+            Label lbl = sender as Label;
+            if (lbl != null)
             {
                 lbl.ForeColor = colourScheme.Secondary;
 
                 // Stop blink timers
-                var timerName = lbl.Name switch
-                {
-                    "labelRPYes" => "timerRPYesBlink",
-                    "labelDeleteAccountYes" => "timerDAYesBlink",
-                    "labelVerifyIdentityYes" => "timerVIBlink",
-                    _ => null
-                };
+                string timerName;
+                if (lbl.Name == "labelRPYes") timerName = "timerRPYesBlink";
+                else if (lbl.Name == "labelDeleteAccountYes") timerName = "timerDAYesBlink";
+                else if (lbl.Name == "labelVerifyIdentityYes") timerName = "timerVIBlink";
+                else timerName = null;
                 if (timerName != null)
                 {
-                    var timer = Controls.Find(timerName, false).FirstOrDefault() as Timer;
-                    timer?.Stop();
+                    Timer timer = Controls.Find(timerName, false).FirstOrDefault() as Timer;
+                    if (timer != null) timer.Stop();
                 }
             }
         }
