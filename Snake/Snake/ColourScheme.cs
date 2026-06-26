@@ -40,11 +40,48 @@ namespace Snake
             { "sleepy", s => { s.Primary = Color.FromArgb(27, 49, 77); s.Secondary = Color.FromArgb(210, 232, 218); s.Tertiary = Color.FromArgb(224, 79, 127); s.Level = Color.FromArgb(160, 182, 168); } }
         };
 
+        // Numeric palette IDs (1-based, matching SelectedPalette in SnakeClass)
+        private static readonly Dictionary<int, string> NumericIdMap = new Dictionary<int, string>
+        {
+            { 1, "default_" },
+            { 2, "leaf" },
+            { 3, "aqua" },
+            { 4, "gameboy" },
+            { 5, "pastel" },
+            { 6, "darkred" },
+            { 7, "grayscale" },
+            { 8, "nuclear" },
+            { 9, "onebit" },
+            { 10, "bokju" },
+            { 11, "purply" },
+            { 12, "glow" },
+            { 13, "oldncold" },
+            { 14, "mossy" },
+            { 15, "lavender" },
+            { 16, "forest" },
+            { 17, "jungle" },
+            { 18, "vivid" },
+            { 19, "winter" },
+            { 20, "antique" },
+            { 21, "dirtsnow" },
+            { 22, "mars" },
+            { 23, "sleepy" }
+        };
+
         public static void Apply(string paletteId, ColourScheme scheme)
         {
             if (SchemeSetters.TryGetValue(paletteId, out var setter))
             {
                 setter(scheme);
+            }
+        }
+
+        public static void ApplyById(int paletteId, ColourScheme scheme)
+        {
+            if (NumericIdMap.TryGetValue(paletteId, out var name))
+            {
+                SchemeSetters.TryGetValue(name, out var setter);
+                setter?.Invoke(scheme);
             }
         }
     }

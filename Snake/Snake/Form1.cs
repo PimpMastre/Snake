@@ -93,7 +93,8 @@ namespace Snake
             var result = new System.Collections.Generic.List<Label>();
             foreach (string prefix in prefixes)
             {
-                var c = Controls.Find(prefix, false).FirstOrDefault() as Label;
+                var c = panel1.Controls.Find(prefix, false).FirstOrDefault() as Label
+                        ?? Controls.Find(prefix, false).FirstOrDefault() as Label;
                 if (c != null) result.Add(c);
             }
             return result.ToArray();
@@ -101,23 +102,27 @@ namespace Snake
 
         private Label FindLabelByName(string name)
         {
-            return Controls.Find(name, false).FirstOrDefault() as Label;
+            return panel1.Controls.Find(name, false).FirstOrDefault() as Label
+                   ?? Controls.Find(name, false).FirstOrDefault() as Label;
         }
 
         // ===== COLOUR SCHEME =====
 
         private void ApplyColourScheme()
         {
+            // Populate the scheme object from the saved palette selection
+            ColourScheme.ApplyById(SnakeClass.GetSelectedPalette(), colourScheme);
+
             var primary = colourScheme.Primary;
             var secondary = colourScheme.Secondary;
             var tertiary = colourScheme.Tertiary;
 
-            // Set all labels' back/foreground colors in one pass
-            foreach (var lbl in Controls.OfType<Label>())
+            // Set all labels' back/foreground colors in one pass (search all children recursively)
+            foreach (var lbl in GetAllControls<Label>())
             {
                 lbl.BackColor = primary;
             }
-            foreach (var lbl in Controls.OfType<Label>())
+            foreach (var lbl in GetAllControls<Label>())
             {
                 // Determine foreground based on the label's role
                 lbl.ForeColor = GetLabelColor(lbl.Name);
@@ -125,7 +130,7 @@ namespace Snake
 
             // Panel and other containers
             panel1.BackColor = primary;
-            foreach (var pb in Controls.OfType<PictureBox>().Where(p => p.Name.StartsWith("pictureBoxLevelSelect")))
+            foreach (var pb in GetAllControls<PictureBox>().Where(p => p.Name.StartsWith("pictureBoxLevelSelect")))
             {
                 pb.BackColor = colourScheme.Level;
                 pb.ForeColor = secondary;
@@ -197,11 +202,26 @@ namespace Snake
 
         // ===== HELPERS =====
 
+        private IEnumerable<T> GetAllControls<T>() where T : Control
+        {
+            var result = new System.Collections.Generic.List<T>();
+            void Walk(System.Windows.Forms.Control parent)
+            {
+                foreach (Control c in parent.Controls)
+                {
+                    if (c is T t) result.Add(t);
+                    if (c.Controls.Count > 0) Walk(c);
+                }
+            }
+            Walk(panel1);
+            return result;
+        }
+
         private void HideAll()
         {
-            foreach (var c in Controls.OfType<Label>()) c.Visible = false;
-            foreach (var c in Controls.OfType<PictureBox>()) c.Visible = false;
-            foreach (var c in Controls.OfType<TextBox>()) c.Visible = false;
+            foreach (var c in GetAllControls<Label>()) c.Visible = false;
+            foreach (var c in GetAllControls<PictureBox>()) c.Visible = false;
+            foreach (var c in GetAllControls<TextBox>()) c.Visible = false;
         }
 
         private void ShowMainMenu()
@@ -576,9 +596,12 @@ namespace Snake
             labelLSMultiplierBonusTop.Visible = true;
             labelLSMultiplierBonusChange.Visible = true;
 
-            var pic1 = Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
-            var pic2 = Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
-            var pic3 = Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
+            var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
+            var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
+            var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
 
             if (pic1 != null) { pic1.Visible = selectedGameLevel > 1; }
             if (pic2 != null) { pic2.Visible = true; }
@@ -589,9 +612,12 @@ namespace Snake
 
         private void UpdateLevelImages()
         {
-            var pic1 = Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
-            var pic2 = Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
-            var pic3 = Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
+            var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
+            var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
+            var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
 
             if (pic1 != null && selectedGameLevel > 1)
                 pic1.BackgroundImage = Image.FromFile(imageHandler.GetImage(selectedGameLevel - 1));
@@ -994,9 +1020,12 @@ namespace Snake
 
         private void HideLevelSelect()
         {
-            var pic1 = Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
-            var pic2 = Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
-            var pic3 = Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
+            var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
+            var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
+            var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
 
             HideLabels(new[] { labelLevelSelectTop });
             if (pic1 != null) pic1.Visible = false;
@@ -1074,9 +1103,12 @@ namespace Snake
 
             ShowLabels(new[] { labelBack });
             ShowLabels(new[] { labelLevelSelectTop });
-            var pic1 = Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
-            var pic2 = Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
-            var pic3 = Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
+            var pic1 = panel1.Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect1", false).FirstOrDefault() as PictureBox;
+            var pic2 = panel1.Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect2", false).FirstOrDefault() as PictureBox;
+            var pic3 = panel1.Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox
+                       ?? Controls.Find("pictureBoxLevelSelect3", false).FirstOrDefault() as PictureBox;
             if (pic1 != null) pic1.Visible = selectedGameLevel > 1;
             if (pic2 != null) pic2.Visible = true;
             if (pic3 != null) pic3.Visible = selectedGameLevel < 7;
