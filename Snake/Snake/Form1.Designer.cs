@@ -191,7 +191,6 @@
             this.panel1.Controls.Add(this.pictureBoxLevelSelect1);
             this.panel1.Controls.Add(this.pictureBoxLevelSelect3);
             this.panel1.Controls.Add(this.pictureBoxLevelSelect2);
-            this.panel1.Controls.Add(this.labelStartGame);
             this.panel1.Controls.Add(this.labelLevelSelectTop);
             this.panel1.Controls.Add(this.labelScore8);
             this.panel1.Controls.Add(this.labelScore9);
@@ -651,23 +650,6 @@
             this.pictureBoxLevelSelect2.TabIndex = 101;
             this.pictureBoxLevelSelect2.TabStop = false;
             this.pictureBoxLevelSelect2.Click += new System.EventHandler(this.pictureBoxLevelSelect2_Click);
-            //
-            // labelStartGame
-            //
-            this.labelStartGame = new System.Windows.Forms.Label();
-            this.labelStartGame.AutoSize = true;
-            this.labelStartGame.BackColor = System.Drawing.Color.Black;
-            this.labelStartGame.Font = new System.Drawing.Font("8BIT WONDER", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelStartGame.ForeColor = System.Drawing.Color.Transparent;
-            this.labelStartGame.Location = new System.Drawing.Point(158, 398);
-            this.labelStartGame.Name = "labelStartGame";
-            this.labelStartGame.Size = new System.Drawing.Size(134, 19);
-            this.labelStartGame.TabIndex = 102;
-            this.labelStartGame.Text = "CLICK TO START";
-            this.labelStartGame.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.labelStartGame.Click += new System.EventHandler(this.pictureBoxLevelSelect2_Click);
-            this.labelStartGame.MouseEnter += new System.EventHandler(this.SharedMouseEnter);
-            this.labelStartGame.MouseLeave += new System.EventHandler(this.SharedMouseLeave);
             //
             // labelLevelSelectTop
             // 
@@ -2132,7 +2114,6 @@
         private System.Windows.Forms.PictureBox pictureBoxLevelSelect1;
         private System.Windows.Forms.PictureBox pictureBoxLevelSelect3;
         private System.Windows.Forms.PictureBox pictureBoxLevelSelect2;
-        private System.Windows.Forms.Label labelStartGame;
         private System.Windows.Forms.Label labelBackDifficulty;
         private System.Windows.Forms.Label labelLSDifficultyTop;
         private System.Windows.Forms.Label labelLSDifficultyChange;

@@ -41,7 +41,7 @@ namespace Snake
         {
             if (levelNo < 1 || levelNo > 7)
                 return true;
-            return SnakeClass.GetPlayerLevel() < LevelUnlockThresholds[levelNo];
+            return SnakeClass.GetPlayerLevel() < LevelUnlockThresholds[levelNo - 1];
         }
 
         public string GetImage(int levelNo)
