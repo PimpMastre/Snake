@@ -67,7 +67,12 @@ namespace Snake
             paletteList = new[] { "", "default_", "leaf", "aqua", "gameboy", "pastel", "darkred", "grayscale", "nuclear", "onebit", "bokju", "purply", "glow", "oldncold", "mossy", "lavender", "forest", "jungle", "vivid", "winter", "antique", "dirtsnow", "mars", "sleepy" };
             paletteIndex = 1;
 
-            // Build label arrays for bulk operations
+            colourSchemes = new ColourSchemes(colourScheme);
+            gameEngine = new GameEngine(colourScheme);
+
+            InitializeComponent();
+
+            // Build label arrays for bulk operations (must be after InitializeComponent — panel1 doesn't exist before then)
             mainMenuLabels = FindControlsByPrefix("labelPlay", "labelHighScores", "labelExit", "labelOptions");
             difficultyLabels = FindControlsByPrefix("labelDifficultyEasy", "labelDifficultyMedium", "labelDifficultyHard", "labelDifficultyExtreme");
             hsLevelLabels = FindControlsByPrefix("labelHSLevel1", "labelHSLevel2", "labelHSLevel3", "labelHSLevel4", "labelHSLevel5", "labelHSLevel6", "labelHSLevel7");
@@ -81,10 +86,6 @@ namespace Snake
                 highScoreScoreLabels[i] = FindLabelByName("labelScore" + (i + 1));
             }
 
-            colourSchemes = new ColourSchemes(colourScheme);
-            gameEngine = new GameEngine(colourScheme);
-
-            InitializeComponent();
             dbHandler.Initialise();
         }
 
@@ -93,17 +94,24 @@ namespace Snake
             var result = new System.Collections.Generic.List<Label>();
             foreach (string prefix in prefixes)
             {
-                var c = panel1.Controls.Find(prefix, false).FirstOrDefault() as Label
-                        ?? Controls.Find(prefix, false).FirstOrDefault() as Label;
-                if (c != null) result.Add(c);
+                Control ctrl = null;
+                if (panel1 != null)
+                    ctrl = panel1.Controls.Find(prefix, false).FirstOrDefault();
+                if (ctrl == null)
+                    ctrl = Controls.Find(prefix, false).FirstOrDefault();
+                if (ctrl is Label c) result.Add(c);
             }
             return result.ToArray();
         }
 
         private Label FindLabelByName(string name)
         {
-            return panel1.Controls.Find(name, false).FirstOrDefault() as Label
-                   ?? Controls.Find(name, false).FirstOrDefault() as Label;
+            Control ctrl = null;
+            if (panel1 != null)
+                ctrl = panel1.Controls.Find(name, false).FirstOrDefault();
+            if (ctrl == null)
+                ctrl = Controls.Find(name, false).FirstOrDefault();
+            return ctrl as Label;
         }
 
         // ===== COLOUR SCHEME =====
