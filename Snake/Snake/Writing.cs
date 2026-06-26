@@ -13,6 +13,7 @@ namespace Snake
         {
             if (x >= 1 && x <= 32 && y >= 1 && y <= 32)
             {
+                if (Snake.GridControls == null) return;
                 PictureBox pb = Snake.GridControls[x, y];
                 if (pb != null) pb.BackColor = color;
             }

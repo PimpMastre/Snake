@@ -157,10 +157,6 @@ namespace Snake
         {
             ApplyColourScheme();
 
-            // Update static accessors for Writing class
-            GridControls = PB;
-            ActiveScheme = colourScheme;
-
             labelPlay.Text = isLoggedIn ? "PLAY" : "LOG IN";
             labelPlay.Left = (ClientSize.Width - labelPlay.Width) / 2;
 
@@ -187,6 +183,10 @@ namespace Snake
                 gameEngine.SetGridControls(PB);
                 PBLoaded = true;
             }
+
+            // Update static accessors for Writing class
+            GridControls = PB;
+            ActiveScheme = colourScheme;
 
             gameStarted = false;
             timerBlinkXP.Stop();
