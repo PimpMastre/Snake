@@ -253,9 +253,10 @@ namespace Snake
             if (pic2 != null) pic2.Visible = false;
             if (pic3 != null) pic3.Visible = false;
 
-            for (int i = 1; i <= pixelDivider; i++)
-                for (int j = 1; j <= pixelDivider; j++)
-                    PB[i, j].Visible = false;
+            if (PB != null)
+                for (int i = 1; i <= pixelDivider; i++)
+                    for (int j = 1; j <= pixelDivider; j++)
+                        PB[i, j].Visible = false;
         }
 
         private void HideLabels(Label[] labels)
@@ -1069,9 +1070,10 @@ namespace Snake
             ShowLabels(new[] { labelBack });
 
             // Show the game grid (HideAll hides all PictureBoxes including the grid)
-            for (int i = 1; i <= pixelDivider; i++)
-                for (int j = 1; j <= pixelDivider; j++)
-                    PB[i, j].Visible = true;
+            if (PB != null)
+                for (int i = 1; i <= pixelDivider; i++)
+                    for (int j = 1; j <= pixelDivider; j++)
+                        PB[i, j].Visible = true;
 
             labelEdgeScrolling.Visible = true;
             labelEdgeScrollingMP.Visible = true;
